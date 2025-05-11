@@ -1,0 +1,55 @@
+services:
+  mysql-master:
+    image: mysql:8.4
+    container_name: mysql-master
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: app_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/master/conf.d:/etc/mysql/conf.d
+      - ./mysql/master/data:/var/lib/mysql
+
+  mysql-replica1:
+    image: mysql:8.4
+    container_name: mysql-replica1
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3307:3306"
+    depends_on:
+      - mysql-master
+    volumes:
+      - ./mysql/replica1/conf.d:/etc/mysql/conf.d
+      - ./mysql/replica1/data:/var/lib/mysql
+
+  mysql-replica2:
+    image: mysql:8.4
+    container_name: mysql-replica2
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+    ports:
+      - "3308:3306"
+    depends_on:
+      - mysql-master
+    volumes:
+      - ./mysql/replica2/conf.d:/etc/mysql/conf.d
+      - ./mysql/replica2/data:/var/lib/mysql
+
+  app:
+    build: ./app
+    container_name: api-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql-master
+    environment:
+      DB_HOST: mysql-master
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: rootpass
+      DB_NAME: app_db
