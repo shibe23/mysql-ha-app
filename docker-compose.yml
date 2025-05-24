@@ -10,7 +10,7 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql/master/conf.d:/etc/mysql/conf.d
-      - ./mysql/master/data:/var/lib/mysql
+      - mysql-master-data:/var/lib/mysql
 
   mysql-replica1:
     image: mysql:8.4
@@ -24,7 +24,7 @@ services:
       - mysql-master
     volumes:
       - ./mysql/replica1/conf.d:/etc/mysql/conf.d
-      - ./mysql/replica1/data:/var/lib/mysql
+      - mysql-replica1-data:/var/lib/mysql
 
   mysql-replica2:
     image: mysql:8.4
@@ -38,7 +38,7 @@ services:
       - mysql-master
     volumes:
       - ./mysql/replica2/conf.d:/etc/mysql/conf.d
-      - ./mysql/replica2/data:/var/lib/mysql
+      - mysql-replica2-data:/var/lib/mysql
 
   app:
     build: ./app
@@ -53,3 +53,8 @@ services:
       DB_USER: root
       DB_PASSWORD: rootpass
       DB_NAME: app_db
+
+volumes:
+  mysql-master-data:
+  mysql-replica1-data:
+  mysql-replica2-data:
