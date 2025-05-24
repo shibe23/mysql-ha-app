@@ -10,6 +10,7 @@ services:
       - "3306:3306"
     volumes:
       - ./mysql/master/conf.d:/etc/mysql/conf.d
+      - ./mysql/init:/docker-entrypoint-initdb.d
       - mysql-master-data:/var/lib/mysql
 
   mysql-replica1:
