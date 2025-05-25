@@ -1,5 +1,8 @@
+-- アプリ用データベースの作成
+CREATE DATABASE IF NOT EXISTS app_db;
 USE app_db;
 
+-- ユーザーテーブル
 CREATE TABLE IF NOT EXISTS users (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   email VARCHAR(255) NOT NULL UNIQUE,
@@ -7,9 +10,16 @@ CREATE TABLE IF NOT EXISTS users (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 監査ログテーブル
 CREATE TABLE IF NOT EXISTS audit_logs (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_id BIGINT,
   action VARCHAR(255),
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- レプリケーション用ユーザーの作成
+DROP USER IF EXISTS 'repl'@'%';
+CREATE USER 'repl'@'%' IDENTIFIED WITH mysql_native_password BY 'replpass';
+GRANT REPLICATION SLAVE ON *.* TO 'repl'@'%';
+FLUSH PRIVILEGES;
