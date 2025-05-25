@@ -45,3 +45,19 @@ docker exec -it mysql-master mysql -uroot -prootpass -e \
 docker exec -it mysql-master mysql -uroot -prootpass -e \
 "SHOW PLUGINS;"
 ```
+
+# api-app
+
+## GET User
+
+```bash
+curl http://localhost:3000/users
+```
+
+## POST User
+
+```bash
+curl -X POST http://localhost:3000/users \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","name":"Taro"}'
+```
