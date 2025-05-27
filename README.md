@@ -16,6 +16,10 @@ docker-compose up -d
 ```bash
 docker exec -it mysql-master mysql -uroot -prootpass
 ```
+# List
+```bash
+docker exec -it mysql-master mysql -uroot -prootpass -e \\n"SELECT * FROM app_db.users;"
+```
 
 # Log
 
@@ -31,6 +35,11 @@ docker exec -it mysql-master mysql -uroot -prootpass -e \
 ```
 
 # Misc
+## ProxySQLのルール確認
+
+```bash
+docker exec -it proxysql mysql -uadmin -padmin -h127.0.0.1 -P6032 -e "SELECT * FROM stats_mysql_query_rules;"
+```
 
 ## 認証済みプラグインの全件表示
 
