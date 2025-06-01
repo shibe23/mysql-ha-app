@@ -63,6 +63,13 @@ docker exec -it mysql-master mysql -uroot -prootpass -e \
 curl http://localhost:3000/users
 ```
 
+# Prometheus
+http://localhost:9090/ 
+
+# Grafana
+http://localhost:3001/
+
+
 ## POST User
 
 ```bash
