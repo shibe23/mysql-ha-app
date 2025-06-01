@@ -69,8 +69,37 @@ services:
       - mysql-master
       - mysql-replica1
       - mysql-replica2
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+
+  mysqld-exporter:
+    image: prom/mysqld-exporter
+    container_name: mysqld-exporter
+    environment:
+      - DATA_SOURCE_NAME=root:rootpass@(mysql-master:3306)/
+    command:
+     - "--mysqld.username=root:rootpass"
+     - "--mysqld.address=mysql-master:3306"
+    ports:
+      - "9104:9104"
+    depends_on:
+      - mysql-master
 
 volumes:
+  grafana-data:
   mysql-master-data:
   mysql-replica1-data:
   mysql-replica2-data:
