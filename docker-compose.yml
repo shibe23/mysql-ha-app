@@ -96,6 +96,17 @@ services:
     depends_on:
       - mysql-master
 
+  mysqld-exporter-replica1:
+    image: prom/mysqld-exporter
+    container_name: mysqld-exporter-replica1
+    command:
+     - "--mysqld.username=root:rootpass"
+     - "--mysqld.address=mysql-master:3306"
+    ports:
+      - "9105:9104"
+    depends_on:
+      - mysql-master
+
 volumes:
   grafana-data:
   mysql-master-data:
