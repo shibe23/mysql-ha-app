@@ -88,8 +88,6 @@ services:
   mysqld-exporter:
     image: prom/mysqld-exporter
     container_name: mysqld-exporter
-    environment:
-      - DATA_SOURCE_NAME=root:rootpass@(mysql-master:3306)/
     command:
      - "--mysqld.username=root:rootpass"
      - "--mysqld.address=mysql-master:3306"
