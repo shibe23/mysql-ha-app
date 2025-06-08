@@ -65,10 +65,13 @@ services:
       - "6032:6032"  # 管理用ポート
     volumes:
       - ./proxysql/proxysql.cnf:/etc/proxysql.cnf
+      - proxysql-data:/var/lib/proxysql
     depends_on:
       - mysql-master
       - mysql-replica1
       - mysql-replica2
+    environment:
+      - admin_credentials=admin:admin;radminuser:radminpass
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -107,8 +110,16 @@ services:
     depends_on:
       - mysql-master
 
+  mysql-client:
+    image: mysql:8.4
+    container_name: mysql-client
+    command: sleep infinity
+    volumes:
+      - ./app/scripts:/scripts
+
 volumes:
   grafana-data:
+  proxysql-data:
   mysql-master-data:
   mysql-replica1-data:
   mysql-replica2-data:
