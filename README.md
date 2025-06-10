@@ -77,3 +77,10 @@ curl -X POST http://localhost:3000/users \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","name":"Taro"}'
 ```
+
+# failback
+
+```
+docker-compose up -d mysql-master
+docker exec -it mysql-client /scripts/failback.sh
+```
