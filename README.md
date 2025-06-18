@@ -2,9 +2,6 @@
 
 このリポジトリは、**MySQL Master/Replica クラスタ + ProxySQL + 自動フェイルオーバースクリプト + Grafana可視化**による高可用構成の学習・検証環境です。
 
-
----
-
 ## ✅ 構成概要
 
 ```plaintext
@@ -28,8 +25,6 @@ Monitoring via:
 Prometheus + mysqld_exporter + Grafana
 ````
 
----
-
 ## 🧱 技術スタック
 
 | コンポーネント        | 内容                                |
@@ -40,8 +35,6 @@ Prometheus + mysqld_exporter + Grafana
 | Prometheus     | MySQLメトリクスの収集                     |
 | Grafana        | クエリ件数・遅延・接続数の可視化                  |
 | Docker Compose | 構成の一括起動・検証環境構築                    |
-
----
 
 ## ⚙️ 使用方法
 
@@ -57,8 +50,6 @@ docker-compose up -d --build
 * `proxysql`
 * `mysql-client`（スクリプト実行用）
 * `prometheus`, `grafana`
-
----
 
 ### 2. App API 利用方法（Express）
 
@@ -76,8 +67,6 @@ curl -X POST http://localhost:3000/users \
 curl http://localhost:3000/users
 ```
 
----
-
 ### 3. 障害をシミュレーション（フェイルオーバー）
 
 ```bash
@@ -93,16 +82,12 @@ docker exec -it mysql-client /scripts/failover.sh
 [DONE] Failover complete. mysql-replica1 is now master.
 ```
 
----
-
 ### 4. 旧Master復旧と再同期（フェイルバック）
 
 ```bash
 docker start mysql-master
 docker exec -it mysql-client /scripts/failback.sh
 ```
-
----
 
 ### 5. モニタリング：Prometheus + Grafana
 
@@ -121,8 +106,6 @@ Grafana.com Dashboard ID: 7362
 「Percona MySQL Overview」テンプレート
 ```
 
----
-
 ## 📁 ディレクトリ構成
 
 ```plaintext
@@ -138,8 +121,6 @@ Grafana.com Dashboard ID: 7362
     └── my.cnf
 ```
 
----
-
 ## ✅ 主な学習ポイント
 
 * MySQL GTIDレプリケーションの構築と切替
@@ -147,15 +128,11 @@ Grafana.com Dashboard ID: 7362
 * スクリプトによるフェイルオーバー/フェイルバックの自動化
 * Prometheus + Grafana によるメトリクス監視と可視化
 
----
-
 ## 📝 参考資料
 
 * [ProxySQL official documentation](https://proxysql.com/documentation/)
 * [MySQL GTID replication](https://dev.mysql.com/doc/refman/8.0/en/replication-gtids.html)
 * [Grafana Dashboards](https://grafana.com/grafana/dashboards/)
-
----
 
 ## コマンド一覧 (開発用)
 ### 再起動
