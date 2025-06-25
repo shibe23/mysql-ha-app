@@ -38,7 +38,14 @@ Prometheus + mysqld_exporter + Grafana
 
 ## ⚙️ 使用方法
 
-### 1. 起動
+### 1. 起動準備（テンプレート展開）
+
+```bash
+source ./.env
+./setup.sh
+```
+
+### 2. コンテナ起動
 
 ```bash
 docker-compose up -d --build
@@ -51,7 +58,7 @@ docker-compose up -d --build
 * `mysql-client`（スクリプト実行用）
 * `prometheus`, `grafana`
 
-### 2. App API 利用方法（Express）
+### 3. App API 利用方法（Express）
 
 #### POST `/users`
 
@@ -67,7 +74,7 @@ curl -X POST http://localhost:3000/users \
 curl http://localhost:3000/users
 ```
 
-### 3. 障害をシミュレーション（フェイルオーバー）
+### 4. 障害をシミュレーション（フェイルオーバー）
 
 ```bash
 docker stop mysql-master
@@ -82,21 +89,22 @@ docker exec -it mysql-client /scripts/failover.sh
 [DONE] Failover complete. mysql-replica1 is now master.
 ```
 
-`replica1`の`hostgroup`が`master`と入れ替わり、10になっていることを確認
+`replica1`の`hostgroup`が`master`と入れ替わり、10になっていることを確認：
+
 ```bash
 docker exec -it mysql-client \
-  mysql -h proxysql -P6032 -uradminuser -pradminpass \
+  mysql -h proxysql -P6032 -u${PROXYSQL_EXT_USER} -p${PROXYSQL_EXT_PASS} \
   -e "SELECT hostname, hostgroup_id FROM mysql_servers;"
 ```
 
-### 4. 旧Master復旧と再同期（フェイルバック）
+### 5. 旧Master復旧と再同期（フェイルバック）
 
 ```bash
 docker start mysql-master
 docker exec -it mysql-client /scripts/failback.sh
 ```
 
-### 5. モニタリング：Prometheus + Grafana
+### 6. モニタリング：Prometheus + Grafana
 
 #### Prometheus
 
@@ -117,15 +125,20 @@ Grafana.com Dashboard ID: 7362
 
 ```plaintext
 .
+├── .env
+├── setup.sh
 ├── docker-compose.yml
 ├── app/
 │   └── scripts/
 │       ├── failover.sh
 │       └── failback.sh
 ├── proxysql/
-│   └── proxysql.cnf
-└── mysql-*/conf.d/
-    └── my.cnf
+│   ├── proxysql.cnf.template
+│   └── proxysql.cnf（生成）
+├── mysql-master/
+│   └── init/
+│       ├── init.sql.template
+│       └── init.sql（生成）
 ```
 
 ## ✅ 主な学習ポイント
@@ -141,8 +154,10 @@ Grafana.com Dashboard ID: 7362
 * [MySQL GTID replication](https://dev.mysql.com/doc/refman/8.0/en/replication-gtids.html)
 * [Grafana Dashboards](https://grafana.com/grafana/dashboards/)
 
-## コマンド一覧 (開発用)
+## 🔧 コマンド一覧 (開発用)
+
 ### 再起動
+
 ```bash
 docker-compose down -v
 docker-compose build
@@ -150,37 +165,52 @@ docker-compose up -d
 ```
 
 ### SQLの実行
+
 #### MySQLログイン
+
 ```bash
-docker exec -it mysql-master mysql -uroot -prootpass
+docker exec -it mysql-master \
+  mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASSWORD}
 ```
 
 #### Tableの確認
+
 ```bash
-docker exec -it mysql-master mysql -uroot -prootpass -e \\n"SELECT * FROM app_db.users;"
+docker exec -it mysql-master \
+  mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASSWORD} \
+  -e "SELECT * FROM app_db.users;"
 ```
 
 #### レコードの追加
+
 ```bash
-docker exec -it mysql-master mysql -uroot -prootpass -e \
-"INSERT INTO app_db.users (email, name) VALUES ('replica-test@example.com', 'Rep Test');"
+docker exec -it mysql-master \
+  mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASSWORD} \
+  -e "INSERT INTO app_db.users (email, name) VALUES ('replica-test@example.com', 'Rep Test');"
 ```
 
 #### プラグインの全件表示
+
 ```bash
-docker exec -it mysql-master mysql -uroot -prootpass -e \
-"SHOW PLUGINS;"
+docker exec -it mysql-master \
+  mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASSWORD} \
+  -e "SHOW PLUGINS;"
 ```
 
 #### 認証済みプラグインの全件表示
+
 ```bash
-docker exec -it mysql-master mysql -uroot -prootpass -e \
-"SELECT PLUGIN_NAME, PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_TYPE='AUTHENTICATION';"
+docker exec -it mysql-master \
+  mysql -u${MYSQL_ROOT_USER} -p${MYSQL_ROOT_PASSWORD} \
+  -e "SELECT PLUGIN_NAME, PLUGIN_STATUS FROM information_schema.PLUGINS WHERE PLUGIN_TYPE='AUTHENTICATION';"
 ```
 
 #### ProxySQLのルール確認
+
 ```bash
-docker exec -it proxysql mysql -uadmin -padmin -h127.0.0.1 -P6032 -e "SELECT * FROM stats_mysql_query_rules;"
+docker exec -it proxysql \
+  mysql -u${PROXYSQL_ADMIN_USER} -p${PROXYSQL_ADMIN_PASS} -h127.0.0.1 -P6032 \
+  -e "SELECT * FROM stats_mysql_query_rules;"
 ```
 
 #### Dockerログの表示
