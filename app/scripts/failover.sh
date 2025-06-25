@@ -1,12 +1,12 @@
 #!/bin/bash
 
 # 接続情報
-MYSQL_USER="root"
-MYSQL_PASS="rootpass"
+MYSQL_USER=${MYSQL_ROOT_USER}
+MYSQL_PASS=${MYSQL_ROOT_PASSWORD}
 PROXYSQL_HOST="proxysql"
 PROXYSQL_PORT="6032"
-PROXYSQL_USER="radminuser"
-PROXYSQL_PASS="radminpass"
+PROXYSQL_USER=${PROXYSQL_EXT_USER}
+PROXYSQL_PASS=${PROXYSQL_EXT_PASS}
 REPLICAS=("mysql-replica1" "mysql-replica2")
 MASTER="mysql-master"
 

@@ -1,16 +1,16 @@
 #!/bin/bash
 
 echo "[INFO] Waiting for MySQL master to be ready..."
-until mysql -h mysql-master -uroot -prootpass -e "SELECT 1"; do
+until mysql -h mysql-master -u"$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -e "SELECT 1"; do
   sleep 2
 done
 
 echo "[INFO] Configuring replication..."
-mysql -uroot -prootpass -e "
+mysql -u"$MYSQL_ROOT_USER" -p"$MYSQL_ROOT_PASSWORD" -e "
   CHANGE REPLICATION SOURCE TO
     SOURCE_HOST='mysql-master',
-    SOURCE_USER='repl',
-    SOURCE_PASSWORD='replpass',
+    SOURCE_USER='$MYSQL_REPL_USER',
+    SOURCE_PASSWORD='$MYSQL_REPL_PASSWORD',
     SOURCE_AUTO_POSITION=1;
   START REPLICA;
 "

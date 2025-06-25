@@ -82,6 +82,13 @@ docker exec -it mysql-client /scripts/failover.sh
 [DONE] Failover complete. mysql-replica1 is now master.
 ```
 
+`replica1`の`hostgroup`が`master`と入れ替わり、10になっていることを確認
+```bash
+docker exec -it mysql-client \
+  mysql -h proxysql -P6032 -uradminuser -pradminpass \
+  -e "SELECT hostname, hostgroup_id FROM mysql_servers;"
+```
+
 ### 4. 旧Master復旧と再同期（フェイルバック）
 
 ```bash
